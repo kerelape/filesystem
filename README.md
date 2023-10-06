@@ -1,3 +1,3 @@
 # filesystem
 
-An object-oriented, and, thus, elegant implementation of filesystem in Go.
+An object-oriented, and, therefore, elegant implementation of filesystem in Go.
