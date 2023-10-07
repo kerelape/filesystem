@@ -1,0 +1,55 @@
+name: Go
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  GO_VERSION: '1.20'
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Test
+        run: go test ./... -v
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Lint (by golangcli-lint)
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.54
+  coverage:
+      runs-on: ubuntu-22.04
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+            go-version: ${{ env.GO_VERSION }}
+      - name: Create profile
+        run: go test ./...  -race -coverprofile=coverage.out -covermode=atomic
+      - name: Upload profile
+        uses: codecov/codecov-action@v3
